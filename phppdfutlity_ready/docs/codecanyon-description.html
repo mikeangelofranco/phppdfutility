@@ -1,0 +1,140 @@
+<h2>PHP PDF Toolkit &mdash; All-in-One PDF Tools Web App + REST API (PHP 8 + Python)</h2>
+
+<p>
+    A self-hosted PDF utility web app built with PHP and a clean, modern UI. Upload PDFs/images, run common PDF tasks
+    (merge, split, lock, unlock, convert, redact), and optionally automate everything via a single JSON endpoint:
+    <strong>POST /pdfservice</strong>.
+</p>
+
+<hr>
+
+<h3>Key Features</h3>
+<ul>
+    <li><strong>Merge PDFs</strong> &mdash; drag-and-drop, reorder pages, export a merged PDF.</li>
+    <li><strong>Lock PDF</strong> &mdash; apply a password to a PDF (server-side).</li>
+    <li><strong>Unlock PDF</strong> &mdash; remove password protection from PDFs you own (server-side).</li>
+    <li><strong>Split PDF</strong> &mdash; split into per-page PDFs and download as a ZIP (server-side).</li>
+    <li><strong>Convert PDF to Images</strong> &mdash; export a ZIP of page images.</li>
+    <li><strong>Convert Images to PDF</strong> &mdash; combine images into a single PDF.</li>
+    <li><strong>Redact Text</strong> &mdash; select text to mask and export a redacted PDF; API also supports term-based redaction.</li>
+    <li><strong>Unified REST API</strong> &mdash; one endpoint for lock/unlock/merge/split/redact/convert.</li>
+    <li><strong>Branding via .env</strong> &mdash; app name, tagline, colors, and upload limit.</li>
+    <li><strong>No database required</strong> &mdash; copy to server and run.</li>
+</ul>
+
+<hr>
+
+<h3>Tech Overview</h3>
+<ul>
+    <li><strong>Backend</strong>: PHP 8+ (calls Python scripts using <code>proc_open</code>).</li>
+    <li><strong>Python helpers</strong>: PyPDF2 (merge/split/lock/unlock/redact), Pillow (images to PDF), pypdfium2 (PDF to images).</li>
+    <li><strong>Frontend</strong>: Vanilla JS + PDF.js + pdf-lib for preview and in-browser operations.</li>
+    <li><strong>Deployment</strong>: Shared hosting/VPS (Apache/Nginx) or local dev via <code>php -S</code>.</li>
+</ul>
+
+<hr>
+
+<h3 id="requirements">Requirements</h3>
+<ul>
+    <li>PHP 8.0+ with <code>proc_open</code> enabled</li>
+    <li>Python 3.9+ available on PATH</li>
+    <li>Python packages: <code>PyPDF2</code>, <code>Pillow</code>, <code>pypdfium2</code></li>
+    <li>Recommended PHP extensions: <code>fileinfo</code> (for MIME checks)</li>
+</ul>
+
+<hr>
+
+<h3 id="installation">Installation</h3>
+<ol>
+    <li>Upload the contents of <strong>phppdfutlity_ready</strong> to your server.</li>
+    <li>Point your domain/subdomain document root to the <code>public/</code> folder.</li>
+    <li>Install Python dependencies:</li>
+</ol>
+<pre><code>pip install PyPDF2 Pillow pypdfium2</code></pre>
+<ol start="4">
+    <li>Copy <code>.env.example</code> to <code>.env</code> and customize your branding and upload limits.</li>
+    <li>Open your site and test each tool (Lock/Unlock/Merge/Split/Convert/Redact).</li>
+</ol>
+
+<p>
+    Tip: If you need larger uploads, increase PHP settings such as <code>upload_max_filesize</code> and
+    <code>post_max_size</code>, and update <code>MAX_UPLOAD_BYTES</code> in <code>.env</code>.
+</p>
+
+<hr>
+
+<h3 id="api">Unified API (POST /pdfservice)</h3>
+<p>
+    Automate PDF tasks with a single endpoint. Send JSON and receive the processed file bytes (PDF or ZIP).
+</p>
+
+<h4>Payload</h4>
+<pre><code>{
+  "operation": "lock",
+  "password": "secret",
+  "files": ["&lt;base64 file&gt;"],
+  "text": ["TermA", "TermB"],
+  "order": [0,1,2]
+}</code></pre>
+
+<h4>Supported operations</h4>
+<ul>
+    <li><code>lock</code>, <code>unlock</code></li>
+    <li><code>merge</code>, <code>split</code></li>
+    <li><code>redact</code></li>
+    <li><code>convert to image</code> (returns ZIP)</li>
+    <li><code>convert to pdf</code></li>
+</ul>
+
+<p>
+    See <code>docs/API.md</code> for examples and Postman tips.
+</p>
+
+<hr>
+
+<h3>Files Included</h3>
+<ul>
+    <li><code>public/</code> &mdash; UI + endpoints (<code>pdfservice.php</code>, <code>lock.php</code>, <code>unlock.php</code>, <code>split.php</code>)</li>
+    <li><code>scripts/</code> &mdash; Python helpers per operation</li>
+    <li><code>vendor_py/</code> &mdash; bundled PyPDF2 for environments without site-packages</li>
+    <li><code>config/</code> &mdash; environment loader</li>
+    <li><code>docs/</code> &mdash; installation + API guides</li>
+</ul>
+
+<hr>
+
+<h3>Notes &amp; Limitations</h3>
+<ul>
+    <li>Server-side redaction replaces matched strings in PDF content streams; results can vary depending on PDF text encoding.</li>
+    <li>Some UI operations run in-browser; others run on your server. No third-party uploads are required.</li>
+    <li>Large PDFs may require higher server limits (time/memory/upload size).</li>
+</ul>
+
+<hr>
+
+<h3>Changelog</h3>
+<p><strong>v1.0.0</strong> &mdash; Initial release (lock/unlock/merge/split/convert/redact + unified <code>/pdfservice</code> API)</p>
+
+<hr>
+
+<h3>Customization</h3>
+<p>
+    Edit <code>.env</code> to update app name/tagline, primary/accent colors, call-to-action labels, contact email,
+    and <code>MAX_UPLOAD_BYTES</code> (per-file limit).
+</p>
+
+<hr>
+
+<h3>Support</h3>
+<p>
+    Need help with installation or customization? Send your server details (PHP version + error message) and we’ll assist.
+</p>
+
+<hr>
+
+<h3>Credits</h3>
+<ul>
+    <li>PDF.js and pdf-lib (open-source PDF tooling)</li>
+    <li>PyPDF2, Pillow, pypdfium2 (Python PDF/image libraries)</li>
+    <li>Google Fonts: Space Grotesk, JetBrains Mono</li>
+</ul>
